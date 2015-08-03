@@ -125,6 +125,13 @@ namespace RaileyBuilder
 
             logger("Build complete!");
 
+            logger("Updating git repository...");
+
+            await ExecuteAsync(GitPath, "remote remove origin");
+            await ExecuteAsync(GitPath, string.Format("remote add upstream \"{0}\"", ServerURI));
+
+            logger("Git repository updates complete");
+
             logger("Preparing initial configuration...");
 
             logger("Verifying database connection...");
