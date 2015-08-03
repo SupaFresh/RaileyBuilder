@@ -45,6 +45,7 @@
             this.installServerButton.TabIndex = 0;
             this.installServerButton.Text = "Install Server";
             this.installServerButton.UseVisualStyleBackColor = true;
+            this.installServerButton.Click += new System.EventHandler(this.installServerButton_Click);
             // 
             // serverFolderPathTextBox
             // 
@@ -98,7 +99,7 @@
             this.label2.TabIndex = 6;
             this.label2.Text = "Log";
             // 
-            // Form1
+            // RaileyBuilder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -110,7 +111,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.serverFolderPathTextBox);
             this.Controls.Add(this.installServerButton);
-            this.Name = "Form1";
+            this.Name = "RaileyBuilder";
             this.Text = "Railey Builder";
             this.ResumeLayout(false);
             this.PerformLayout();

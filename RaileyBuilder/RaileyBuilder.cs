@@ -25,5 +25,28 @@ namespace RaileyBuilder
                 serverFolderPathTextBox.Text = fbd.SelectedPath;
             }
         }
+
+        private async void installServerButton_Click(object sender, EventArgs e)
+        {
+            installServerButton.Enabled = false;
+            ServerInstaller serverInstaller = new ServerInstaller(serverFolderPathTextBox.Text, LogMessage);
+
+            await serverInstaller.InstallServerAsync();
+
+            installServerButton.Enabled = true;
+        }
+
+        delegate void LogMessageDelegate(string message);
+        private void LogMessage(string message)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new LogMessageDelegate(LogMessage), message);
+            }
+            else
+            {
+                logBox.Text = logBox.Text + Environment.NewLine + "[" + DateTime.Now.ToLongTimeString() + "] " + message;
+            }
+        }
     }
 }
