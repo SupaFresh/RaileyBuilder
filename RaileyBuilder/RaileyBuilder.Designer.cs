@@ -32,7 +32,7 @@
             this.serverFolderPathTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.browseServerFolderButton = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.updateServerButton = new System.Windows.Forms.Button();
             this.logBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -73,14 +73,15 @@
             this.browseServerFolderButton.UseVisualStyleBackColor = true;
             this.browseServerFolderButton.Click += new System.EventHandler(this.browseServerFolderButton_Click);
             // 
-            // button1
+            // updateServerButton
             // 
-            this.button1.Location = new System.Drawing.Point(128, 63);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(110, 45);
-            this.button1.TabIndex = 4;
-            this.button1.Text = "Update Server";
-            this.button1.UseVisualStyleBackColor = true;
+            this.updateServerButton.Location = new System.Drawing.Point(128, 63);
+            this.updateServerButton.Name = "updateServerButton";
+            this.updateServerButton.Size = new System.Drawing.Size(110, 45);
+            this.updateServerButton.TabIndex = 4;
+            this.updateServerButton.Text = "Update Server";
+            this.updateServerButton.UseVisualStyleBackColor = true;
+            this.updateServerButton.Click += new System.EventHandler(this.updateServerButton_Click);
             // 
             // logBox
             // 
@@ -106,7 +107,7 @@
             this.ClientSize = new System.Drawing.Size(480, 365);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.logBox);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.updateServerButton);
             this.Controls.Add(this.browseServerFolderButton);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.serverFolderPathTextBox);
@@ -124,7 +125,7 @@
         private System.Windows.Forms.TextBox serverFolderPathTextBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button browseServerFolderButton;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button updateServerButton;
         private System.Windows.Forms.TextBox logBox;
         private System.Windows.Forms.Label label2;
     }

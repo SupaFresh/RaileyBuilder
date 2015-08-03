@@ -28,8 +28,6 @@ namespace RaileyBuilder
 
         public bool IsInstallDirectoryEmpty()
         {
-            return true;
-
             if (Directory.Exists(ServerFolder) == false)
             {
                 return true;
@@ -73,6 +71,30 @@ namespace RaileyBuilder
             return null;
         }
 
+        public async Task UpdateServerAsync()
+        {
+            logger("Checking existing server installation...");
+
+            if (IsInstallDirectoryEmpty())
+            {
+                logger("There is no server here! Install one first.");
+                return;
+            }
+
+            logger("Pulling latest changes...");
+
+            await ExecuteAsync(GitPath, "pull upstream --recurse-submodules");
+
+            logger("Download complete!");
+
+            bool buildResult = await PerformBuildAsync();
+            if (!buildResult)
+            {
+                return;
+            }
+
+        }
+
         public async Task InstallServerAsync()
         {
             logger("Starting server installation");
@@ -100,30 +122,12 @@ namespace RaileyBuilder
             await ExecuteAsync(GitPath, string.Format("clone {0} {1}", "\"" + ServerURI + "\"", "\"" + ServerFolder + "\""));
 
             logger("Download complete!");
-            logger("Starting build under (Release)...");
 
-            string msBuildFolder = ReadRegistryKey(@"Software\Microsoft\MSBuild\ToolsVersions\4.0", "MSBuildToolsPath");
-            if (string.IsNullOrEmpty(msBuildFolder))
+            bool buildResult = await PerformBuildAsync();
+            if (!buildResult)
             {
-                logger("The correct version of MSBuild has not been found. Have you installed Visual Studio?");
                 return;
             }
-            string msBuildPath = Path.Combine(msBuildFolder, "msbuild.exe");
-            if (File.Exists(msBuildPath) == false)
-            {
-                logger("MSBuild has not been found. It appears to be installed, but some files are missing. Try reinstalling.");
-                return;
-            }
-
-            int result = await ExecuteAsync(msBuildPath, string.Format("\"{0}\" /p:Configuration=Release", Path.Combine(ServerFolder, "Server.sln")));
-
-            if (result != 0)
-            {
-                logger("A build error has occured! Contact the PMDCP administrators for assistance.");
-                return;
-            }
-
-            logger("Build complete!");
 
             logger("Updating git repository...");
 
@@ -143,6 +147,35 @@ namespace RaileyBuilder
             logger("Schemas created!");
 
             logger("Server installation complete!");
+        }
+
+        private async Task<bool> PerformBuildAsync()
+        {
+            logger("Starting build under (Release)...");
+
+            string msBuildFolder = ReadRegistryKey(@"Software\Microsoft\MSBuild\ToolsVersions\4.0", "MSBuildToolsPath");
+            if (string.IsNullOrEmpty(msBuildFolder))
+            {
+                logger("The correct version of MSBuild has not been found. Have you installed Visual Studio?");
+                return false;
+            }
+            string msBuildPath = Path.Combine(msBuildFolder, "msbuild.exe");
+            if (File.Exists(msBuildPath) == false)
+            {
+                logger("MSBuild has not been found. It appears to be installed, but some files are missing. Try reinstalling.");
+                return false;
+            }
+
+            int result = await ExecuteAsync(msBuildPath, string.Format("\"{0}\" /p:Configuration=Release", Path.Combine(ServerFolder, "Server.sln")));
+
+            if (result != 0)
+            {
+                logger("A build error has occured! Contact the PMDCP administrators for assistance.");
+                return false;
+            }
+
+            logger("Build complete!");
+            return true;
         }
     }
 }

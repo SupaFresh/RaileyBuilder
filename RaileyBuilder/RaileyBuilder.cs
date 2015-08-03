@@ -16,6 +16,31 @@ namespace RaileyBuilder
             InitializeComponent();
         }
 
+        delegate void LogMessageDelegate(string message);
+        private void LogMessage(string message)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new LogMessageDelegate(LogMessage), message);
+            }
+            else
+            {
+                logBox.Text = logBox.Text + Environment.NewLine + "[" + DateTime.Now.ToLongTimeString() + "] " + message;
+            }
+        }
+
+        private void DisableServerOptions()
+        {
+            installServerButton.Enabled = false;
+            updateServerButton.Enabled = false;
+        }
+
+        private void EnableServerOptions()
+        {
+            installServerButton.Enabled = true;
+            updateServerButton.Enabled = true;
+        }
+
         private void browseServerFolderButton_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
@@ -28,25 +53,22 @@ namespace RaileyBuilder
 
         private async void installServerButton_Click(object sender, EventArgs e)
         {
-            installServerButton.Enabled = false;
+            DisableServerOptions();
             ServerInstaller serverInstaller = new ServerInstaller(serverFolderPathTextBox.Text, LogMessage);
 
             await serverInstaller.InstallServerAsync();
 
-            installServerButton.Enabled = true;
+            EnableServerOptions();
         }
 
-        delegate void LogMessageDelegate(string message);
-        private void LogMessage(string message)
+        private async void updateServerButton_Click(object sender, EventArgs e)
         {
-            if (InvokeRequired)
-            {
-                Invoke(new LogMessageDelegate(LogMessage), message);
-            }
-            else
-            {
-                logBox.Text = logBox.Text + Environment.NewLine + "[" + DateTime.Now.ToLongTimeString() + "] " + message;
-            }
+            DisableServerOptions();
+            ServerInstaller serverInstaller = new ServerInstaller(serverFolderPathTextBox.Text, LogMessage);
+
+            await serverInstaller.UpdateServerAsync();
+
+            EnableServerOptions();
         }
     }
 }
