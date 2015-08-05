@@ -23,6 +23,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace RaileyBuilder
 {
@@ -117,7 +118,7 @@ namespace RaileyBuilder
             logger("Starting server installation");
             logger("Checking input data...");
 
-            if (!IsInstallDirectoryEmpty())
+            if (IsInstallDirectoryEmpty())
             {
                 logger("Installation directory is not empty. Please select an empty directory and try again!");
                 return;
@@ -136,7 +137,7 @@ namespace RaileyBuilder
                 return;
             }
 
-            await ExecuteAsync(GitPath, string.Format("clone {0} {1}", "\"" + ServerURI + "\"", "\"" + ServerFolder + "\""));
+            //await ExecuteAsync(GitPath, string.Format("clone {0} {1}", "\"" + ServerURI + "\"", "\"" + ServerFolder + "\""));
 
             logger("Download complete!");
 
@@ -155,6 +156,18 @@ namespace RaileyBuilder
 
             logger("Preparing initial configuration...");
 
+            DatabaseConfigurationForm dbConfig = new DatabaseConfigurationForm();
+            if (dbConfig.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                await WriteConfigurationFile(dbConfig.DatabaseUsername, dbConfig.DatabasePassword);
+            }
+            else
+            {
+                logger("Invalid database configuration entered.");
+                return;
+            }
+
+            logger("Configuration file updated!");
             logger("Verifying database connection...");
 
             logger("Database connection test successful!");
@@ -193,6 +206,35 @@ namespace RaileyBuilder
 
             logger("Build complete!");
             return true;
+        }
+
+        private async Task WriteConfigurationFile(string databaseUsername, string databasePassword)
+        {
+            string path = Path.Combine(ServerFolder, "Server", "bin", "Release", "Data", "config.xml");
+
+            XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
+            {
+                Indent = true,
+                IndentChars = "  "
+            };
+            using (XmlWriter xmlWriter = XmlWriter.Create(path, xmlWriterSettings))
+            {
+                xmlWriter.WriteStartDocument();
+                xmlWriter.WriteStartElement("Data");
+
+                xmlWriter.WriteStartElement("Settings");
+
+                xmlWriter.WriteElementString("GamePort", "4001");
+                xmlWriter.WriteElementString("DatabaseIP", "localhost");
+                xmlWriter.WriteElementString("DatabasePort", "3306");
+                xmlWriter.WriteElementString("DatabaseUser", databaseUsername);
+                xmlWriter.WriteElementString("DatabasePassword", databasePassword);
+
+                xmlWriter.WriteEndElement();
+
+                xmlWriter.WriteEndElement();
+                xmlWriter.WriteEndDocument();
+            }
         }
     }
 }
