@@ -32,6 +32,7 @@ namespace RaileyBuilder
     class ServerInstaller
     {
         private static readonly string GitPath = @"C:\Program Files (x86)\Git\bin\git.exe";
+        private static readonly string MySQLPath = @"C:\Program Files\MySQL\MySQL Server 5.6\bin\mysql.exe";
 
         private static readonly string ServerURI = @"https://github.com/pmdcp/Server";
 
@@ -193,6 +194,10 @@ namespace RaileyBuilder
             logger("Extraction complete!");
 
             logger("Creating initial database schemas (this may take some time)");
+
+            await ExecuteAsync(MySQLPath, string.Format("-u {0} -p{1} -e \"\\. \"{2}\"\"", dbConfig.DatabaseUsername, dbConfig.DatabasePassword, Path.Combine(ServerFolder, "Temp", "mdx_schemas.sql")));
+            await ExecuteAsync(MySQLPath, string.Format("-u {0} -p{1} mdx_data -e \"\\. \"{2}\"\"", dbConfig.DatabaseUsername, dbConfig.DatabasePassword, Path.Combine(ServerFolder, "Temp", "mdx_data.sql")));
+            await ExecuteAsync(MySQLPath, string.Format("-u {0} -p{1} mdx_players -e \"\\. \"{2}\"\"", dbConfig.DatabaseUsername, dbConfig.DatabasePassword, Path.Combine(ServerFolder, "Temp", "mdx_players.sql")));
 
             logger("Schemas created!");
 
