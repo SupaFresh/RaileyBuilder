@@ -196,6 +196,12 @@ namespace RaileyBuilder
 
             logger("Schemas created!");
 
+            logger("Deleting temporary files...");
+
+            Directory.Delete(Path.Combine(ServerFolder, "Temp"), true);
+
+            logger("Temporary files deleted!");
+
             logger("Server installation complete!");
         }
 
