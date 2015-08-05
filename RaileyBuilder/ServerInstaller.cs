@@ -16,6 +16,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 using Microsoft.Win32;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -170,6 +171,27 @@ namespace RaileyBuilder
 
             logger("Configuration file updated!");
             logger("Verifying database connection...");
+
+            string connectionString = string.Format(@"server=localhost;userid={0};password={1};", dbConfig.DatabaseUsername, dbConfig.DatabasePassword);
+            MySqlConnection connection = null;
+            try
+            {
+                connection = new MySqlConnection(connectionString);
+                connection.Open();
+                logger(string.Format("MySQL connection opened. Server version: {0}", connection.ServerVersion));
+            }
+            catch (MySqlException)
+            {
+                logger("Unable to open connection to MySQL. Check the username and password, and try again");
+                return;
+            }
+            finally
+            {
+                if (connection != null)
+                {
+                    connection.Close();
+                }
+            }
 
             logger("Database connection test successful!");
 
