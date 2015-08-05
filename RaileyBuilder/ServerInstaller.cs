@@ -172,25 +172,9 @@ namespace RaileyBuilder
             logger("Configuration file updated!");
             logger("Verifying database connection...");
 
-            string connectionString = string.Format(@"server=localhost;userid={0};password={1};", dbConfig.DatabaseUsername, dbConfig.DatabasePassword);
-            MySqlConnection connection = null;
-            try
+            if (await TestDatabaseConnection(dbConfig.DatabaseUsername, dbConfig.DatabasePassword) == false)
             {
-                connection = new MySqlConnection(connectionString);
-                connection.Open();
-                logger(string.Format("MySQL connection opened. Server version: {0}", connection.ServerVersion));
-            }
-            catch (MySqlException)
-            {
-                logger("Unable to open connection to MySQL. Check the username and password, and try again");
                 return;
-            }
-            finally
-            {
-                if (connection != null)
-                {
-                    connection.Close();
-                }
             }
 
             logger("Database connection test successful!");
@@ -257,6 +241,31 @@ namespace RaileyBuilder
 
                 xmlWriter.WriteEndElement();
                 xmlWriter.WriteEndDocument();
+            }
+        }
+
+        private async Task<bool> TestDatabaseConnection(string username, string password)
+        {
+            string connectionString = string.Format(@"server=localhost;userid={0};password={1};", username, password);
+            MySqlConnection connection = null;
+            try
+            {
+                connection = new MySqlConnection(connectionString);
+                connection.Open();
+                logger(string.Format("MySQL connection opened. Server version: {0}", connection.ServerVersion));
+                return true;
+            }
+            catch (MySqlException)
+            {
+                logger("Unable to open connection to MySQL. Check the username and password, and try again");
+                return false;
+            }
+            finally
+            {
+                if (connection != null)
+                {
+                    connection.Close();
+                }
             }
         }
     }
