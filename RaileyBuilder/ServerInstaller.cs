@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -179,7 +180,19 @@ namespace RaileyBuilder
 
             logger("Database connection test successful!");
 
-            logger("Creating initial database schemas...");
+            logger("Extracting database seed data...");
+
+            using (FileStream file = new FileStream(Path.Combine(ServerFolder, "Content_Data.zip"), FileMode.Open))
+            {
+                using (ZipArchive zipArchive = new ZipArchive(file))
+                {
+                    zipArchive.ExtractToDirectory(Path.Combine(ServerFolder, "Temp"));
+                }
+            }
+
+            logger("Extraction complete!");
+
+            logger("Creating initial database schemas (this may take some time)");
 
             logger("Schemas created!");
 
