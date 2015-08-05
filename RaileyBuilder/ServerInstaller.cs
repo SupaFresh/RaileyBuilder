@@ -63,6 +63,7 @@ namespace RaileyBuilder
         {
             ProcessStartInfo startInfo = new ProcessStartInfo(executable, arguments);
             startInfo.UseShellExecute = false;
+            startInfo.WorkingDirectory = ServerFolder;
             Process exec = Process.Start(startInfo);
             await Task.Run(() =>
             {
