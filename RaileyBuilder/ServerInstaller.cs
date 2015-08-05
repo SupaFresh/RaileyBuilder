@@ -141,7 +141,7 @@ namespace RaileyBuilder
                 return;
             }
 
-            await ExecuteAsync(GitPath, string.Format("clone {0} {1}", "\"" + ServerURI + "\"", "\"" + ServerFolder + "\""));
+            await ExecuteAsync(GitPath, string.Format("clone --recursive {0} {1}", "\"" + ServerURI + "\"", "\"" + ServerFolder + "\""));
 
             logger("Download complete!");
 
