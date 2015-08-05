@@ -120,7 +120,7 @@ namespace RaileyBuilder
             logger("Starting server installation");
             logger("Checking input data...");
 
-            if (IsInstallDirectoryEmpty())
+            if (!IsInstallDirectoryEmpty())
             {
                 logger("Installation directory is not empty. Please select an empty directory and try again!");
                 return;
@@ -139,7 +139,7 @@ namespace RaileyBuilder
                 return;
             }
 
-            //await ExecuteAsync(GitPath, string.Format("clone {0} {1}", "\"" + ServerURI + "\"", "\"" + ServerFolder + "\""));
+            await ExecuteAsync(GitPath, string.Format("clone {0} {1}", "\"" + ServerURI + "\"", "\"" + ServerFolder + "\""));
 
             logger("Download complete!");
 
