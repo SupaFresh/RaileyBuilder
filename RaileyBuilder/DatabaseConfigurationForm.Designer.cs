@@ -33,6 +33,9 @@
             this.databaseUsernameTextBox = new System.Windows.Forms.TextBox();
             this.databasePasswordTextBox = new System.Windows.Forms.TextBox();
             this.confirmButton = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -70,7 +73,7 @@
             // 
             // confirmButton
             // 
-            this.confirmButton.Location = new System.Drawing.Point(243, 63);
+            this.confirmButton.Location = new System.Drawing.Point(243, 91);
             this.confirmButton.Name = "confirmButton";
             this.confirmButton.Size = new System.Drawing.Size(75, 23);
             this.confirmButton.TabIndex = 4;
@@ -78,12 +81,45 @@
             this.confirmButton.UseVisualStyleBackColor = true;
             this.confirmButton.Click += new System.EventHandler(this.confirmButton_Click);
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(39, 67);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(78, 13);
+            this.label3.TabIndex = 5;
+            this.label3.Text = "Database Port:";
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.Location = new System.Drawing.Point(125, 65);
+            this.numericUpDown1.Maximum = new decimal(new int[] {
+            99999,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(193, 20);
+            this.numericUpDown1.TabIndex = 6;
+            this.numericUpDown1.Value = new decimal(new int[] {
+            3306,
+            0,
+            0,
+            0});
+            // 
             // DatabaseConfigurationForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(330, 98);
+            this.ClientSize = new System.Drawing.Size(330, 126);
             this.ControlBox = false;
+            this.Controls.Add(this.numericUpDown1);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.confirmButton);
             this.Controls.Add(this.databasePasswordTextBox);
             this.Controls.Add(this.databaseUsernameTextBox);
@@ -91,6 +127,7 @@
             this.Controls.Add(this.label1);
             this.Name = "DatabaseConfigurationForm";
             this.Text = "DatabaseConfigurationForm";
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -103,5 +140,7 @@
         private System.Windows.Forms.TextBox databaseUsernameTextBox;
         private System.Windows.Forms.TextBox databasePasswordTextBox;
         private System.Windows.Forms.Button confirmButton;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.NumericUpDown numericUpDown1;
     }
 }

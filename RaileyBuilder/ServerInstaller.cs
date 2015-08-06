@@ -192,7 +192,7 @@ namespace RaileyBuilder
             DatabaseConfigurationForm dbConfig = new DatabaseConfigurationForm();
             if (dbConfig.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                await WriteConfigurationFile(dbConfig.DatabaseUsername, dbConfig.DatabasePassword);
+                await WriteConfigurationFile(dbConfig.DatabaseUsername, dbConfig.DatabasePassword, dbConfig.DatabasePort);
             }
             else
             {
@@ -203,7 +203,7 @@ namespace RaileyBuilder
             logger("Configuration file updated!");
             logger("Verifying database connection...");
 
-            if (await TestDatabaseConnection(dbConfig.DatabaseUsername, dbConfig.DatabasePassword) == false)
+            if (await TestDatabaseConnection(dbConfig.DatabaseUsername, dbConfig.DatabasePassword, dbConfig.DatabasePort) == false)
             {
                 return;
             }
@@ -272,7 +272,7 @@ namespace RaileyBuilder
             return true;
         }
 
-        private async Task WriteConfigurationFile(string databaseUsername, string databasePassword)
+        private async Task WriteConfigurationFile(string databaseUsername, string databasePassword, int databasePort)
         {
             string path = Path.Combine(ServerFolder, "Server", "bin", "Release", "Data", "config.xml");
 
@@ -290,7 +290,7 @@ namespace RaileyBuilder
 
                 xmlWriter.WriteElementString("GamePort", "4001");
                 xmlWriter.WriteElementString("DatabaseIP", "localhost");
-                xmlWriter.WriteElementString("DatabasePort", "3306");
+                xmlWriter.WriteElementString("DatabasePort", databasePort.ToString());
                 xmlWriter.WriteElementString("DatabaseUser", databaseUsername);
                 xmlWriter.WriteElementString("DatabasePassword", databasePassword);
 
@@ -301,9 +301,9 @@ namespace RaileyBuilder
             }
         }
 
-        private async Task<bool> TestDatabaseConnection(string username, string password)
+        private async Task<bool> TestDatabaseConnection(string username, string password, int port)
         {
-            string connectionString = string.Format(@"server=localhost;userid={0};password={1};", username, password);
+            string connectionString = string.Format(@"server=localhost;port={0};userid={1};password={2};", port, username, password);
             MySqlConnection connection = null;
             try
             {
@@ -312,9 +312,9 @@ namespace RaileyBuilder
                 logger(string.Format("MySQL connection opened. Server version: {0}", connection.ServerVersion));
                 return true;
             }
-            catch (MySqlException)
+            catch (MySqlException ex)
             {
-                logger("Unable to open connection to MySQL. Check the username and password, and try again");
+                logger("Unable to open connection to MySQL. Check the username and password, and try again. Error: " + ex.ToString());
                 return false;
             }
             finally

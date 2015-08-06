@@ -14,6 +14,7 @@ namespace RaileyBuilder
     {
         public string DatabaseUsername { get; private set; }
         public string DatabasePassword { get; private set; }
+        public int DatabasePort { get; private set; }
 
         public DatabaseConfigurationForm()
         {
@@ -24,6 +25,7 @@ namespace RaileyBuilder
         {
             this.DatabaseUsername = databaseUsernameTextBox.Text;
             this.DatabasePassword = databasePasswordTextBox.Text;
+            this.DatabasePort = (int)numericUpDown1.Value;
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
         }
     }
