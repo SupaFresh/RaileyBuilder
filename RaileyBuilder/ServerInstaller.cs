@@ -149,6 +149,8 @@ namespace RaileyBuilder
         public async Task InstallServerAsync()
         {
             logger("Starting server installation");
+            logger("MySQL Path: " + MySQLPath);
+            logger("Git Path: " + GitPath);
             logger("Checking input data...");
 
             if (!IsInstallDirectoryEmpty())
