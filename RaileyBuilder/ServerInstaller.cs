@@ -73,7 +73,7 @@ namespace RaileyBuilder
                 }
             }
 
-            throw new FileNotFoundException();
+            throw new FileNotFoundException("Unable to find: " + subFolder);
         }
 
         public bool IsInstallDirectoryEmpty()
