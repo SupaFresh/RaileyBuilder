@@ -212,6 +212,10 @@ namespace RaileyBuilder
 
             logger("Extracting database seed data...");
 
+            if (Directory.Exists(Path.Combine(ServerFolder, "Temp")))
+            {
+                Directory.Delete(Path.Combine(ServerFolder, "Temp"), true);
+            }
             using (FileStream file = new FileStream(Path.Combine(ServerFolder, "Content_Data.zip"), FileMode.Open))
             {
                 using (ZipArchive zipArchive = new ZipArchive(file))
