@@ -31,12 +31,20 @@ namespace RaileyBuilder
 {
     class ServerInstaller
     {
-        private static readonly string GitPath = @"C:\Program Files (x86)\Git\bin\git.exe";
-        private static readonly string MySQLPath = @"C:\Program Files\MySQL\MySQL Server 5.6\bin\mysql.exe";
+        private static readonly string[] ProgramFilesDirectories = new string[] {
+            "Program Files (x86)",
+            "Program Files"
+        };
+
+        private static readonly string GitSubdirectory = @"Git\bin\git.exe";
+        private static readonly string MySQLSubdirectory = @"MySQL\MySQL Server 5.6\bin\mysql.exe";
 
         private static readonly string ServerURI = @"https://github.com/pmdcp/Server";
 
         public string ServerFolder { get; private set; }
+
+        readonly string GitPath;
+        readonly string MySQLPath;
 
         Action<string> logger;
 
@@ -45,6 +53,27 @@ namespace RaileyBuilder
             this.ServerFolder = serverFolder;
 
             this.logger = logger;
+
+            GitPath = FindAmbiguousExecutable(GitSubdirectory);
+            MySQLPath = FindAmbiguousExecutable(MySQLSubdirectory);
+        }
+
+        private string FindAmbiguousExecutable(string subFolder)
+        {
+            DriveInfo[] drives = DriveInfo.GetDrives();
+            foreach (DriveInfo drive in drives)
+            {
+                foreach (string programFilesDirectory in ProgramFilesDirectories)
+                {
+                    string testPath = Path.Combine(drive.Name, programFilesDirectory, subFolder);
+                    if (File.Exists(testPath))
+                    {
+                        return testPath;
+                    }
+                }
+            }
+
+            throw new FileNotFoundException();
         }
 
         public bool IsInstallDirectoryEmpty()
