@@ -85,7 +85,8 @@ namespace RaileyBuilder
         private async void installServerButton_Click(object sender, EventArgs e)
         {
             DisableServerOptions();
-            ServerInstaller serverInstaller = new ServerInstaller(serverFolderPathTextBox.Text, LogMessage, UpdateProgress);
+            Reporter reporter = new Reporter(UpdateProgress);
+            ServerInstaller serverInstaller = new ServerInstaller(serverFolderPathTextBox.Text, reporter);
 
             await serverInstaller.InstallServerAsync();
 
@@ -95,7 +96,8 @@ namespace RaileyBuilder
         private async void updateServerButton_Click(object sender, EventArgs e)
         {
             DisableServerOptions();
-            ServerInstaller serverInstaller = new ServerInstaller(serverFolderPathTextBox.Text, LogMessage, UpdateProgress);
+            Reporter reporter = new Reporter(UpdateProgress);
+            ServerInstaller serverInstaller = new ServerInstaller(serverFolderPathTextBox.Text, reporter);
 
             await serverInstaller.UpdateServerAsync();
 

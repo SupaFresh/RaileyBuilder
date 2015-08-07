@@ -46,15 +46,13 @@ namespace RaileyBuilder
         readonly string GitPath;
         readonly string MySQLPath;
 
-        Action<string> logger;
-        Action<string, int> updateProgress;
+        Reporter reporter;
 
-        public ServerInstaller(string serverFolder, Action<string> logger, Action<string, int> updateProgress)
+        public ServerInstaller(string serverFolder, Reporter reporter)
         {
             this.ServerFolder = serverFolder;
 
-            this.logger = logger;
-            this.updateProgress = updateProgress;
+            this.reporter = reporter;
 
             GitPath = FindAmbiguousExecutable(GitSubdirectory);
             MySQLPath = FindAmbiguousExecutable(MySQLSubdirectory);
@@ -127,19 +125,19 @@ namespace RaileyBuilder
 
         public async Task UpdateServerAsync()
         {
-            logger("Checking existing server installation...");
+            reporter.WriteToLog("Checking existing server installation...");
 
             if (IsInstallDirectoryEmpty())
             {
-                logger("There is no server here! Install one first.");
+                reporter.WriteToLog("There is no server here! Install one first.");
                 return;
             }
 
-            logger("Pulling latest changes...");
+            reporter.WriteToLog("Pulling latest changes...");
 
             await ExecuteAsync(GitPath, "pull upstream --recurse-submodules");
 
-            logger("Download complete!");
+            reporter.WriteToLog("Download complete!");
 
             bool buildResult = await PerformBuildAsync();
             if (!buildResult)
@@ -151,15 +149,15 @@ namespace RaileyBuilder
 
         public async Task InstallServerAsync()
         {
-            updateProgress("Starting server installation", 0);
-            logger("Starting server installation");
-            logger("MySQL Path: " + MySQLPath);
-            logger("Git Path: " + GitPath);
-            logger("Checking input data...");
+            reporter.UpdateProgress("Starting server installation", 0);
+            reporter.WriteToLog("Starting server installation");
+            reporter.WriteToLog("MySQL Path: " + MySQLPath);
+            reporter.WriteToLog("Git Path: " + GitPath);
+            reporter.WriteToLog("Checking input data...");
 
             if (!IsInstallDirectoryEmpty())
             {
-                logger("Installation directory is not empty. Please select an empty directory and try again!");
+                reporter.WriteToLog("ERROR: Installation directory is not empty. Please select an empty directory and try again!");
                 return;
             }
 
@@ -168,35 +166,35 @@ namespace RaileyBuilder
                 Directory.CreateDirectory(ServerFolder);
             }
 
-            logger("Preparing to download latest server files...");
-            updateProgress("Downloading latest server files...", 10);
+            reporter.WriteToLog("Preparing to download latest server files...");
+            reporter.UpdateProgress("Downloading latest server files...", 10);
 
             if (!File.Exists(GitPath))
             {
-                logger("Unable to find Git client. Make sure you've installed GitHub for Desktop!");
+                reporter.WriteToLog("ERROR: Unable to find Git client. Make sure you've installed GitHub for Desktop!");
                 return;
             }
 
             await ExecuteAsync(GitPath, string.Format("clone --recursive {0} {1}", "\"" + ServerURI + "\"", "\"" + ServerFolder + "\""));
 
-            logger("Download complete!");
+            reporter.WriteToLog("Download complete!");
 
-            updateProgress("Building server (Release)", 30);
+            reporter.UpdateProgress("Building server (Release)", 30);
             bool buildResult = await PerformBuildAsync();
             if (!buildResult)
             {
                 return;
             }
 
-            updateProgress("Configuring local settings...", 60);
-            logger("Updating git repository...");
+            reporter.UpdateProgress("Configuring local settings...", 60);
+            reporter.WriteToLog("Updating git repository...");
 
             await ExecuteAsync(GitPath, "remote remove origin");
             await ExecuteAsync(GitPath, string.Format("remote add upstream \"{0}\"", ServerURI));
 
-            logger("Git repository updates complete");
+            reporter.WriteToLog("Git repository updates complete");
 
-            logger("Preparing initial configuration...");
+            reporter.WriteToLog("Preparing initial configuration...");
 
             DatabaseConfigurationForm dbConfig = new DatabaseConfigurationForm();
             if (dbConfig.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -205,24 +203,24 @@ namespace RaileyBuilder
             }
             else
             {
-                logger("Invalid database configuration entered.");
+                reporter.WriteToLog("ERROR: Invalid database configuration entered.");
                 return;
             }
 
-            logger("Configuration file updated!");
+            reporter.WriteToLog("Configuration file updated!");
 
-            updateProgress("Testing database connection...", 70);
-            logger("Verifying database connection...");
+            reporter.UpdateProgress("Testing database connection...", 70);
+            reporter.WriteToLog("Verifying database connection...");
 
             if (await TestDatabaseConnection(dbConfig.DatabaseUsername, dbConfig.DatabasePassword, dbConfig.DatabasePort) == false)
             {
                 return;
             }
 
-            logger("Database connection test successful!");
+            reporter.WriteToLog("Database connection test successful!");
 
-            updateProgress("Extracting database seed data...", 80);
-            logger("Extracting database seed data...");
+            reporter.UpdateProgress("Extracting database seed data...", 80);
+            reporter.WriteToLog("Extracting database seed data...");
 
             if (Directory.Exists(Path.Combine(ServerFolder, "Temp")))
             {
@@ -236,44 +234,44 @@ namespace RaileyBuilder
                 }
             }
 
-            logger("Extraction complete!");
+            reporter.WriteToLog("Extraction complete!");
 
-            logger("Creating initial database schemas (this may take some time)");
+            reporter.WriteToLog("Creating initial database schemas (this may take some time)");
 
-            updateProgress("Importing database schemas", 85);
+            reporter.UpdateProgress("Importing database schemas", 85);
             await ExecuteAsync(MySQLPath, string.Format("-u {0} -p{1} -e \"\\. {2}\"", dbConfig.DatabaseUsername, dbConfig.DatabasePassword, Path.Combine(ServerFolder, "Temp", "mdx_schemas.sql")));
-            updateProgress("Importing game data", 90);
+            reporter.UpdateProgress("Importing game data", 90);
             await ExecuteAsync(MySQLPath, string.Format("-u {0} -p{1} mdx_data -e \"\\. {2}\"", dbConfig.DatabaseUsername, dbConfig.DatabasePassword, Path.Combine(ServerFolder, "Temp", "mdx_data.sql")));
-            updateProgress("Importing player data", 95);
+            reporter.UpdateProgress("Importing player data", 95);
             await ExecuteAsync(MySQLPath, string.Format("-u {0} -p{1} mdx_players -e \"\\. {2}\"", dbConfig.DatabaseUsername, dbConfig.DatabasePassword, Path.Combine(ServerFolder, "Temp", "mdx_players.sql")));
 
-            logger("Schemas created!");
+            reporter.WriteToLog("Schemas created!");
 
-            updateProgress("Cleaning up...", 99);
-            logger("Deleting temporary files...");
+            reporter.UpdateProgress("Cleaning up...", 99);
+            reporter.WriteToLog("Deleting temporary files...");
 
             Directory.Delete(Path.Combine(ServerFolder, "Temp"), true);
 
-            logger("Temporary files deleted!");
+            reporter.WriteToLog("Temporary files deleted!");
 
-            logger("Server installation complete!");
-            updateProgress("Server installation complete!", 100);
+            reporter.WriteToLog("Server installation complete!");
+            reporter.UpdateProgress("Server installation complete!", 100);
         }
 
         private async Task<bool> PerformBuildAsync()
         {
-            logger("Starting build under (Release)...");
+            reporter.WriteToLog("Starting build under (Release)...");
 
             string msBuildFolder = ReadRegistryKey(@"Software\Microsoft\MSBuild\ToolsVersions\4.0", "MSBuildToolsPath");
             if (string.IsNullOrEmpty(msBuildFolder))
             {
-                logger("The correct version of MSBuild has not been found. Have you installed Visual Studio?");
+                reporter.WriteToLog("ERROR: The correct version of MSBuild has not been found. Have you installed Visual Studio?");
                 return false;
             }
             string msBuildPath = Path.Combine(msBuildFolder, "msbuild.exe");
             if (File.Exists(msBuildPath) == false)
             {
-                logger("MSBuild has not been found. It appears to be installed, but some files are missing. Try reinstalling.");
+                reporter.WriteToLog("ERROR: MSBuild has not been found. It appears to be installed, but some files are missing. Try reinstalling.");
                 return false;
             }
 
@@ -281,11 +279,11 @@ namespace RaileyBuilder
 
             if (result != 0)
             {
-                logger("A build error has occured! Contact the PMDCP administrators for assistance.");
+                reporter.WriteToLog("ERROR: A build error has occured! Contact the PMDCP administrators for assistance.");
                 return false;
             }
 
-            logger("Build complete!");
+            reporter.WriteToLog("Build complete!");
             return true;
         }
 
@@ -326,12 +324,13 @@ namespace RaileyBuilder
             {
                 connection = new MySqlConnection(connectionString);
                 connection.Open();
-                logger(string.Format("MySQL connection opened. Server version: {0}", connection.ServerVersion));
+                reporter.WriteToLog(string.Format("MySQL connection opened. Server version: {0}", connection.ServerVersion));
                 return true;
             }
             catch (MySqlException ex)
             {
-                logger("Unable to open connection to MySQL. Check the username and password, and try again. Error: " + ex.ToString());
+                reporter.WriteToLog("ERROR: Unable to open connection to MySQL. Check the username and password, and try again.");
+                reporter.WriteExceptionToLog(ex);
                 return false;
             }
             finally
