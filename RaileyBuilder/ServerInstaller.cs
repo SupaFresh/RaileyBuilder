@@ -47,12 +47,14 @@ namespace RaileyBuilder
         readonly string MySQLPath;
 
         Action<string> logger;
+        Action<string, int> updateProgress;
 
-        public ServerInstaller(string serverFolder, Action<string> logger)
+        public ServerInstaller(string serverFolder, Action<string> logger, Action<string, int> updateProgress)
         {
             this.ServerFolder = serverFolder;
 
             this.logger = logger;
+            this.updateProgress = updateProgress;
 
             GitPath = FindAmbiguousExecutable(GitSubdirectory);
             MySQLPath = FindAmbiguousExecutable(MySQLSubdirectory);
@@ -96,6 +98,7 @@ namespace RaileyBuilder
             ProcessStartInfo startInfo = new ProcessStartInfo(executable, arguments);
             startInfo.UseShellExecute = false;
             startInfo.WorkingDirectory = ServerFolder;
+            startInfo.CreateNoWindow = true;
             Process exec = Process.Start(startInfo);
             await Task.Run(() =>
             {
@@ -148,6 +151,7 @@ namespace RaileyBuilder
 
         public async Task InstallServerAsync()
         {
+            updateProgress("Starting server installation", 0);
             logger("Starting server installation");
             logger("MySQL Path: " + MySQLPath);
             logger("Git Path: " + GitPath);
@@ -165,6 +169,7 @@ namespace RaileyBuilder
             }
 
             logger("Preparing to download latest server files...");
+            updateProgress("Downloading latest server files...", 10);
 
             if (!File.Exists(GitPath))
             {
@@ -176,12 +181,14 @@ namespace RaileyBuilder
 
             logger("Download complete!");
 
+            updateProgress("Building server (Release)", 30);
             bool buildResult = await PerformBuildAsync();
             if (!buildResult)
             {
                 return;
             }
 
+            updateProgress("Configuring local settings...", 60);
             logger("Updating git repository...");
 
             await ExecuteAsync(GitPath, "remote remove origin");
@@ -203,6 +210,8 @@ namespace RaileyBuilder
             }
 
             logger("Configuration file updated!");
+
+            updateProgress("Testing database connection...", 70);
             logger("Verifying database connection...");
 
             if (await TestDatabaseConnection(dbConfig.DatabaseUsername, dbConfig.DatabasePassword, dbConfig.DatabasePort) == false)
@@ -212,6 +221,7 @@ namespace RaileyBuilder
 
             logger("Database connection test successful!");
 
+            updateProgress("Extracting database seed data...", 80);
             logger("Extracting database seed data...");
 
             if (Directory.Exists(Path.Combine(ServerFolder, "Temp")))
@@ -230,12 +240,16 @@ namespace RaileyBuilder
 
             logger("Creating initial database schemas (this may take some time)");
 
+            updateProgress("Importing database schemas", 85);
             await ExecuteAsync(MySQLPath, string.Format("-u {0} -p{1} -e \"\\. {2}\"", dbConfig.DatabaseUsername, dbConfig.DatabasePassword, Path.Combine(ServerFolder, "Temp", "mdx_schemas.sql")));
+            updateProgress("Importing game data", 90);
             await ExecuteAsync(MySQLPath, string.Format("-u {0} -p{1} mdx_data -e \"\\. {2}\"", dbConfig.DatabaseUsername, dbConfig.DatabasePassword, Path.Combine(ServerFolder, "Temp", "mdx_data.sql")));
+            updateProgress("Importing player data", 95);
             await ExecuteAsync(MySQLPath, string.Format("-u {0} -p{1} mdx_players -e \"\\. {2}\"", dbConfig.DatabaseUsername, dbConfig.DatabasePassword, Path.Combine(ServerFolder, "Temp", "mdx_players.sql")));
 
             logger("Schemas created!");
 
+            updateProgress("Cleaning up...", 99);
             logger("Deleting temporary files...");
 
             Directory.Delete(Path.Combine(ServerFolder, "Temp"), true);
@@ -243,6 +257,7 @@ namespace RaileyBuilder
             logger("Temporary files deleted!");
 
             logger("Server installation complete!");
+            updateProgress("Server installation complete!", 100);
         }
 
         private async Task<bool> PerformBuildAsync()

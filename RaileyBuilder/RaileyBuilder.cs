@@ -46,6 +46,20 @@ namespace RaileyBuilder
             }
         }
 
+        delegate void UpdateProgressDelegate(string message, int value);
+        private void UpdateProgress(string message, int value)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new UpdateProgressDelegate(UpdateProgress), message, value);
+            }
+            else
+            {
+                progressBar.Value = value;
+                progressLabel.Text = message;
+            }
+        }
+
         private void DisableServerOptions()
         {
             installServerButton.Enabled = false;
@@ -71,7 +85,7 @@ namespace RaileyBuilder
         private async void installServerButton_Click(object sender, EventArgs e)
         {
             DisableServerOptions();
-            ServerInstaller serverInstaller = new ServerInstaller(serverFolderPathTextBox.Text, LogMessage);
+            ServerInstaller serverInstaller = new ServerInstaller(serverFolderPathTextBox.Text, LogMessage, UpdateProgress);
 
             await serverInstaller.InstallServerAsync();
 
@@ -81,7 +95,7 @@ namespace RaileyBuilder
         private async void updateServerButton_Click(object sender, EventArgs e)
         {
             DisableServerOptions();
-            ServerInstaller serverInstaller = new ServerInstaller(serverFolderPathTextBox.Text, LogMessage);
+            ServerInstaller serverInstaller = new ServerInstaller(serverFolderPathTextBox.Text, LogMessage, UpdateProgress);
 
             await serverInstaller.UpdateServerAsync();
 

@@ -34,7 +34,8 @@
             this.browseServerFolderButton = new System.Windows.Forms.Button();
             this.updateServerButton = new System.Windows.Forms.Button();
             this.logBox = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.progressLabel = new System.Windows.Forms.Label();
+            this.progressBar = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
             // 
             // installServerButton
@@ -85,28 +86,36 @@
             // 
             // logBox
             // 
-            this.logBox.Location = new System.Drawing.Point(12, 135);
+            this.logBox.Location = new System.Drawing.Point(318, 76);
             this.logBox.Multiline = true;
             this.logBox.Name = "logBox";
             this.logBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.logBox.Size = new System.Drawing.Size(456, 218);
+            this.logBox.Size = new System.Drawing.Size(110, 21);
             this.logBox.TabIndex = 5;
+            this.logBox.Visible = false;
             // 
-            // label2
+            // progressLabel
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 119);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(25, 13);
-            this.label2.TabIndex = 6;
-            this.label2.Text = "Log";
+            this.progressLabel.AutoSize = true;
+            this.progressLabel.Location = new System.Drawing.Point(12, 114);
+            this.progressLabel.Name = "progressLabel";
+            this.progressLabel.Size = new System.Drawing.Size(0, 13);
+            this.progressLabel.TabIndex = 6;
+            // 
+            // progressBar
+            // 
+            this.progressBar.Location = new System.Drawing.Point(12, 130);
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(456, 23);
+            this.progressBar.TabIndex = 7;
             // 
             // RaileyBuilder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(480, 365);
-            this.Controls.Add(this.label2);
+            this.ClientSize = new System.Drawing.Size(480, 170);
+            this.Controls.Add(this.progressBar);
+            this.Controls.Add(this.progressLabel);
             this.Controls.Add(this.logBox);
             this.Controls.Add(this.updateServerButton);
             this.Controls.Add(this.browseServerFolderButton);
@@ -128,7 +137,8 @@
         private System.Windows.Forms.Button browseServerFolderButton;
         private System.Windows.Forms.Button updateServerButton;
         private System.Windows.Forms.TextBox logBox;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label progressLabel;
+        private System.Windows.Forms.ProgressBar progressBar;
     }
 }
 
