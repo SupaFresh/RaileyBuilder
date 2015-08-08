@@ -98,8 +98,14 @@ namespace RaileyBuilder
             startInfo.WorkingDirectory = ServerFolder;
             startInfo.CreateNoWindow = true;
             startInfo.RedirectStandardOutput = true;
+            startInfo.RedirectStandardError = true;
             Process exec = Process.Start(startInfo);
             string output = await exec.StandardOutput.ReadToEndAsync();
+            string error = await exec.StandardError.ReadToEndAsync();
+            if (!string.IsNullOrEmpty(error))
+            {
+                output += Environment.NewLine + Environment.NewLine + "Error:" + Environment.NewLine + await exec.StandardError.ReadToEndAsync();
+            }
 
             reporter.WriteProgramOutputToLog(executable, arguments, output);
 
@@ -137,7 +143,19 @@ namespace RaileyBuilder
             reporter.WriteToLog("Pulling latest changes...");
             reporter.UpdateProgress("Pulling latest changes...", 15);
 
-            await ExecuteAsync(GitPath, "pull upstream --recurse-submodules");
+            int result = await ExecuteAsync(GitPath, "pull --recurse-submodules --ff-only upstream master");
+            if (result == 1)
+            {
+                reporter.ReportError("Unable to pull latest changes and merge. Have you made edits to your server?");
+                return;
+            }
+
+            result = await ExecuteAsync(GitPath, "checkout master");
+            if (result == 1)
+            {
+                reporter.ReportError("Unable to checkout latest version. Have you made edits to your server?");
+                return;
+            }
 
             reporter.WriteToLog("Download complete!");
 
