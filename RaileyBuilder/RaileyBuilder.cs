@@ -29,9 +29,13 @@ namespace RaileyBuilder
 {
     public partial class RaileyBuilder : Form
     {
+        int lastDependencyY;
+
         public RaileyBuilder()
         {
             InitializeComponent();
+
+            lastDependencyY = progressBar.Location.Y + progressBar.Height + 5;
         }
 
         delegate void UpdateProgressDelegate(string message, int value);
@@ -48,6 +52,36 @@ namespace RaileyBuilder
                     progressBar.Value = value;
                 }
                 progressLabel.Text = message;
+            }
+        }
+
+        delegate void ReportDependencyDelegare(string name, string downloadUrl);
+        private void ReportDependency(string name, string downloadUrl)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new ReportDependencyDelegare(ReportDependency), name, downloadUrl);
+            }
+            else
+            {
+                Label label = new Label();
+                label.AutoSize = true;
+                label.Text = "Missing: " + name;
+                label.Location = new Point(10, lastDependencyY);
+
+                LinkLabel linkLabel = new LinkLabel();
+                linkLabel.AutoSize = true;
+                linkLabel.Text = downloadUrl;
+                linkLabel.Location = new Point(label.Location.X + label.Width + 10, lastDependencyY);
+
+                this.Controls.Add(label);
+                this.Controls.Add(linkLabel);
+
+                int maxHeight = System.Math.Max(label.Height, linkLabel.Height);
+
+                this.Height += maxHeight;
+
+                lastDependencyY += System.Math.Max(label.Height, linkLabel.Height) + 10;
             }
         }
 
@@ -81,7 +115,7 @@ namespace RaileyBuilder
             {
                 File.Delete(logPath);
             }
-            Reporter reporter = new Reporter(UpdateProgress, logPath);
+            Reporter reporter = new Reporter(UpdateProgress, ReportDependency, logPath);
             ServerInstaller serverInstaller = new ServerInstaller(serverFolderPathTextBox.Text, reporter);
 
             await serverInstaller.InstallServerAsync();
@@ -97,7 +131,7 @@ namespace RaileyBuilder
             {
                 File.Delete(logPath);
             }
-            Reporter reporter = new Reporter(UpdateProgress, logPath);
+            Reporter reporter = new Reporter(UpdateProgress, ReportDependency, logPath);
             ServerInstaller serverInstaller = new ServerInstaller(serverFolderPathTextBox.Text, reporter);
 
             await serverInstaller.UpdateServerAsync();

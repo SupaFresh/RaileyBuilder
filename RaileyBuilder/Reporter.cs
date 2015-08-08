@@ -10,11 +10,13 @@ namespace RaileyBuilder
     class Reporter
     {
         Action<string, int> updateProgressDelegate;
+        Action<string, string> reportDependencyDelegate;
         string logFilePath;
 
-        public Reporter(Action<string, int> updateProgressDelegate, string logFilePath)
+        public Reporter(Action<string, int> updateProgressDelegate, Action<string, string> reportDependencyDelegate, string logFilePath)
         {
             this.updateProgressDelegate = updateProgressDelegate;
+            this.reportDependencyDelegate = reportDependencyDelegate;
             this.logFilePath = logFilePath;
         }
 
@@ -63,6 +65,11 @@ namespace RaileyBuilder
         {
             WriteToLog("ERROR: " + errorMessage);
             UpdateProgress("ERROR: " + errorMessage, -1);
+        }
+
+        public void ReportMissingDependency(string name, string downloadUrl)
+        {
+            reportDependencyDelegate(name, downloadUrl);
         }
     }
 }
