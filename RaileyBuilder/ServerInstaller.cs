@@ -159,6 +159,18 @@ namespace RaileyBuilder
             reporter.WriteToLog("Git Path: " + GitPath);
             reporter.WriteToLog("Checking input data...");
 
+            if (!File.Exists(GitPath))
+            {
+                reporter.ReportError("Unable to find Git client. Make sure you've installed msysgit!");
+                return;
+            }
+
+            if (!File.Exists(MySQLPath))
+            {
+                reporter.ReportError("Unable to find MySQL. Make sure you've installed MySQL!");
+                return;
+            }
+
             if (!IsInstallDirectoryEmpty())
             {
                 reporter.ReportError("Installation directory is not empty. Please select an empty directory and try again!");
@@ -172,12 +184,6 @@ namespace RaileyBuilder
 
             reporter.WriteToLog("Preparing to download latest server files...");
             reporter.UpdateProgress("Downloading latest server files...", 10);
-
-            if (!File.Exists(GitPath))
-            {
-                reporter.ReportError("Unable to find Git client. Make sure you've installed GitHub for Desktop!");
-                return;
-            }
 
             await ExecuteAsync(GitPath, string.Format("clone --recursive {0} {1}", "\"" + ServerURI + "\"", "\"" + ServerFolder + "\""));
 
