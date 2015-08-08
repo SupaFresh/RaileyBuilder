@@ -33,7 +33,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.browseServerFolderButton = new System.Windows.Forms.Button();
             this.updateServerButton = new System.Windows.Forms.Button();
-            this.logBox = new System.Windows.Forms.TextBox();
             this.progressLabel = new System.Windows.Forms.Label();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
@@ -84,16 +83,6 @@
             this.updateServerButton.UseVisualStyleBackColor = true;
             this.updateServerButton.Click += new System.EventHandler(this.updateServerButton_Click);
             // 
-            // logBox
-            // 
-            this.logBox.Location = new System.Drawing.Point(318, 76);
-            this.logBox.Multiline = true;
-            this.logBox.Name = "logBox";
-            this.logBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.logBox.Size = new System.Drawing.Size(110, 21);
-            this.logBox.TabIndex = 5;
-            this.logBox.Visible = false;
-            // 
             // progressLabel
             // 
             this.progressLabel.AutoSize = true;
@@ -116,7 +105,6 @@
             this.ClientSize = new System.Drawing.Size(480, 170);
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.progressLabel);
-            this.Controls.Add(this.logBox);
             this.Controls.Add(this.updateServerButton);
             this.Controls.Add(this.browseServerFolderButton);
             this.Controls.Add(this.label1);
@@ -136,7 +124,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button browseServerFolderButton;
         private System.Windows.Forms.Button updateServerButton;
-        private System.Windows.Forms.TextBox logBox;
         private System.Windows.Forms.Label progressLabel;
         private System.Windows.Forms.ProgressBar progressBar;
     }

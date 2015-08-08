@@ -34,19 +34,6 @@ namespace RaileyBuilder
             InitializeComponent();
         }
 
-        delegate void LogMessageDelegate(string message);
-        private void LogMessage(string message)
-        {
-            if (InvokeRequired)
-            {
-                Invoke(new LogMessageDelegate(LogMessage), message);
-            }
-            else
-            {
-                logBox.Text = logBox.Text + Environment.NewLine + "[" + DateTime.Now.ToLongTimeString() + "] " + message;
-            }
-        }
-
         delegate void UpdateProgressDelegate(string message, int value);
         private void UpdateProgress(string message, int value)
         {
