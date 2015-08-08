@@ -97,11 +97,11 @@ namespace RaileyBuilder
             startInfo.UseShellExecute = false;
             startInfo.WorkingDirectory = ServerFolder;
             startInfo.CreateNoWindow = true;
+            startInfo.RedirectStandardOutput = true;
             Process exec = Process.Start(startInfo);
-            await Task.Run(() =>
-            {
-                exec.WaitForExit();
-            });
+            string output = await exec.StandardOutput.ReadToEndAsync();
+
+            reporter.WriteProgramOutputToLog(executable, arguments, output);
 
             return exec.ExitCode;
         }

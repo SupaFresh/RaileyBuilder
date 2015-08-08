@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -85,7 +86,12 @@ namespace RaileyBuilder
         private async void installServerButton_Click(object sender, EventArgs e)
         {
             DisableServerOptions();
-            Reporter reporter = new Reporter(UpdateProgress);
+            string logPath = "Log.txt";
+            if (File.Exists(logPath))
+            {
+                File.Delete(logPath);
+            }
+            Reporter reporter = new Reporter(UpdateProgress, logPath);
             ServerInstaller serverInstaller = new ServerInstaller(serverFolderPathTextBox.Text, reporter);
 
             await serverInstaller.InstallServerAsync();
@@ -96,7 +102,12 @@ namespace RaileyBuilder
         private async void updateServerButton_Click(object sender, EventArgs e)
         {
             DisableServerOptions();
-            Reporter reporter = new Reporter(UpdateProgress);
+            string logPath = "Log.txt";
+            if (File.Exists(logPath))
+            {
+                File.Delete(logPath);
+            }
+            Reporter reporter = new Reporter(UpdateProgress, logPath);
             ServerInstaller serverInstaller = new ServerInstaller(serverFolderPathTextBox.Text, reporter);
 
             await serverInstaller.UpdateServerAsync();
