@@ -126,25 +126,29 @@ namespace RaileyBuilder
         public async Task UpdateServerAsync()
         {
             reporter.WriteToLog("Checking existing server installation...");
+            reporter.UpdateProgress("Checking existing server installation...", 0);
 
             if (IsInstallDirectoryEmpty())
             {
-                reporter.WriteToLog("There is no server here! Install one first.");
+                reporter.WriteToLog("ERROR: There is no server here! Install one first.");
                 return;
             }
 
             reporter.WriteToLog("Pulling latest changes...");
+            reporter.UpdateProgress("Pulling latest changes...", 15);
 
             await ExecuteAsync(GitPath, "pull upstream --recurse-submodules");
 
             reporter.WriteToLog("Download complete!");
 
+            reporter.UpdateProgress("Building server...", 70);
             bool buildResult = await PerformBuildAsync();
             if (!buildResult)
             {
                 return;
             }
 
+            reporter.UpdateProgress("Server update has been completed!", 100);
         }
 
         public async Task InstallServerAsync()
