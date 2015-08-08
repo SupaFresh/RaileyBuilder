@@ -58,5 +58,11 @@ namespace RaileyBuilder
                 }
             }
         }
+
+        public void ReportError(string errorMessage)
+        {
+            WriteToLog("ERROR: " + errorMessage);
+            UpdateProgress("ERROR: " + errorMessage, -1);
+        }
     }
 }

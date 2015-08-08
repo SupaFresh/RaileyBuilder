@@ -130,7 +130,7 @@ namespace RaileyBuilder
 
             if (IsInstallDirectoryEmpty())
             {
-                reporter.WriteToLog("ERROR: There is no server here! Install one first.");
+                reporter.ReportError("There is no server here! Install one first.");
                 return;
             }
 
@@ -161,7 +161,7 @@ namespace RaileyBuilder
 
             if (!IsInstallDirectoryEmpty())
             {
-                reporter.WriteToLog("ERROR: Installation directory is not empty. Please select an empty directory and try again!");
+                reporter.ReportError("Installation directory is not empty. Please select an empty directory and try again!");
                 return;
             }
 
@@ -175,7 +175,7 @@ namespace RaileyBuilder
 
             if (!File.Exists(GitPath))
             {
-                reporter.WriteToLog("ERROR: Unable to find Git client. Make sure you've installed GitHub for Desktop!");
+                reporter.ReportError("Unable to find Git client. Make sure you've installed GitHub for Desktop!");
                 return;
             }
 
@@ -207,7 +207,7 @@ namespace RaileyBuilder
             }
             else
             {
-                reporter.WriteToLog("ERROR: Invalid database configuration entered.");
+                reporter.ReportError("Invalid database configuration entered.");
                 return;
             }
 
@@ -269,13 +269,13 @@ namespace RaileyBuilder
             string msBuildFolder = ReadRegistryKey(@"Software\Microsoft\MSBuild\ToolsVersions\4.0", "MSBuildToolsPath");
             if (string.IsNullOrEmpty(msBuildFolder))
             {
-                reporter.WriteToLog("ERROR: The correct version of MSBuild has not been found. Have you installed Visual Studio?");
+                reporter.ReportError("The correct version of MSBuild has not been found. Have you installed Visual Studio?");
                 return false;
             }
             string msBuildPath = Path.Combine(msBuildFolder, "msbuild.exe");
             if (File.Exists(msBuildPath) == false)
             {
-                reporter.WriteToLog("ERROR: MSBuild has not been found. It appears to be installed, but some files are missing. Try reinstalling.");
+                reporter.ReportError("MSBuild has not been found. It appears to be installed, but some files are missing. Try reinstalling.");
                 return false;
             }
 
@@ -283,7 +283,7 @@ namespace RaileyBuilder
 
             if (result != 0)
             {
-                reporter.WriteToLog("ERROR: A build error has occured! Contact the PMDCP administrators for assistance.");
+                reporter.ReportError("A build error has occured! Contact the PMDCP administrators for assistance.");
                 return false;
             }
 
@@ -333,7 +333,7 @@ namespace RaileyBuilder
             }
             catch (MySqlException ex)
             {
-                reporter.WriteToLog("ERROR: Unable to open connection to MySQL. Check the username and password, and try again.");
+                reporter.ReportError("Unable to open connection to MySQL. Check the username and password, and try again.");
                 reporter.WriteExceptionToLog(ex);
                 return false;
             }

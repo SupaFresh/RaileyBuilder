@@ -43,7 +43,10 @@ namespace RaileyBuilder
             }
             else
             {
-                progressBar.Value = value;
+                if (value != -1)
+                {
+                    progressBar.Value = value;
+                }
                 progressLabel.Text = message;
             }
         }
