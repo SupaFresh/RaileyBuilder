@@ -241,9 +241,9 @@ namespace RaileyBuilder
             reporter.UpdateProgress("Importing database schemas", 85);
             await ExecuteAsync(MySQLPath, string.Format("-u {0} -p{1} -e \"\\. {2}\"", dbConfig.DatabaseUsername, dbConfig.DatabasePassword, Path.Combine(ServerFolder, "Temp", "mdx_schemas.sql")));
             reporter.UpdateProgress("Importing game data", 90);
-            await ExecuteAsync(MySQLPath, string.Format("-u {0} -p{1} mdx_data -e \"\\. {2}\"", dbConfig.DatabaseUsername, dbConfig.DatabasePassword, Path.Combine(ServerFolder, "Temp", "mdx_data.sql")));
+            await ExecuteAsync(MySQLPath, string.Format("-u {0} -p{1} -e \"\\. {2}\"", dbConfig.DatabaseUsername, dbConfig.DatabasePassword, Path.Combine(ServerFolder, "Temp", "mdx_data.sql")));
             reporter.UpdateProgress("Importing player data", 95);
-            await ExecuteAsync(MySQLPath, string.Format("-u {0} -p{1} mdx_players -e \"\\. {2}\"", dbConfig.DatabaseUsername, dbConfig.DatabasePassword, Path.Combine(ServerFolder, "Temp", "mdx_players.sql")));
+            await ExecuteAsync(MySQLPath, string.Format("-u {0} -p{1} -e \"\\. {2}\"", dbConfig.DatabaseUsername, dbConfig.DatabasePassword, Path.Combine(ServerFolder, "Temp", "mdx_players.sql")));
 
             reporter.WriteToLog("Schemas created!");
 
