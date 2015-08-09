@@ -90,6 +90,7 @@ namespace RaileyBuilder
             installServerButton.Enabled = false;
             updateServerButton.Enabled = false;
             installClientButton.Enabled = false;
+            updateClientButton.Enabled = false;
         }
 
         private void EnableInstallerOptions()
@@ -97,6 +98,7 @@ namespace RaileyBuilder
             installServerButton.Enabled = true;
             updateServerButton.Enabled = true;
             installClientButton.Enabled = true;
+            updateClientButton.Enabled = true;
         }
 
         private void browseServerFolderButton_Click(object sender, EventArgs e)
@@ -153,6 +155,22 @@ namespace RaileyBuilder
             ClientInstaller clientInstaller = new ClientInstaller(targetFolderTextBox.Text, reporter);
 
             await clientInstaller.InstallClientAsync();
+
+            EnableInstallerOptions();
+        }
+
+        private async void updateClientButton_Click(object sender, EventArgs e)
+        {
+            DisableInstallerOptions();
+            string logPath = "Log.txt";
+            if (File.Exists(logPath))
+            {
+                File.Delete(logPath);
+            }
+            Reporter reporter = new Reporter(UpdateProgress, ReportDependency, logPath);
+            ClientInstaller clientInstaller = new ClientInstaller(targetFolderTextBox.Text, reporter);
+
+            await clientInstaller.UpdateClientAsync();
 
             EnableInstallerOptions();
         }

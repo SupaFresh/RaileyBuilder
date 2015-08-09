@@ -36,13 +36,14 @@
             this.progressLabel = new System.Windows.Forms.Label();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.installClientButton = new System.Windows.Forms.Button();
+            this.updateClientButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // installServerButton
             // 
             this.installServerButton.Location = new System.Drawing.Point(12, 63);
             this.installServerButton.Name = "installServerButton";
-            this.installServerButton.Size = new System.Drawing.Size(110, 45);
+            this.installServerButton.Size = new System.Drawing.Size(92, 45);
             this.installServerButton.TabIndex = 0;
             this.installServerButton.Text = "Install Server";
             this.installServerButton.UseVisualStyleBackColor = true;
@@ -76,9 +77,9 @@
             // 
             // updateServerButton
             // 
-            this.updateServerButton.Location = new System.Drawing.Point(128, 63);
+            this.updateServerButton.Location = new System.Drawing.Point(110, 63);
             this.updateServerButton.Name = "updateServerButton";
-            this.updateServerButton.Size = new System.Drawing.Size(110, 45);
+            this.updateServerButton.Size = new System.Drawing.Size(92, 45);
             this.updateServerButton.TabIndex = 4;
             this.updateServerButton.Text = "Update Server";
             this.updateServerButton.UseVisualStyleBackColor = true;
@@ -101,19 +102,30 @@
             // 
             // installClientButton
             // 
-            this.installClientButton.Location = new System.Drawing.Point(358, 63);
+            this.installClientButton.Location = new System.Drawing.Point(278, 63);
             this.installClientButton.Name = "installClientButton";
-            this.installClientButton.Size = new System.Drawing.Size(110, 45);
+            this.installClientButton.Size = new System.Drawing.Size(92, 45);
             this.installClientButton.TabIndex = 8;
             this.installClientButton.Text = "Install Client";
             this.installClientButton.UseVisualStyleBackColor = true;
             this.installClientButton.Click += new System.EventHandler(this.installClientButton_Click);
+            // 
+            // updateClientButton
+            // 
+            this.updateClientButton.Location = new System.Drawing.Point(376, 63);
+            this.updateClientButton.Name = "updateClientButton";
+            this.updateClientButton.Size = new System.Drawing.Size(92, 45);
+            this.updateClientButton.TabIndex = 9;
+            this.updateClientButton.Text = "Update Client";
+            this.updateClientButton.UseVisualStyleBackColor = true;
+            this.updateClientButton.Click += new System.EventHandler(this.updateClientButton_Click);
             // 
             // RaileyBuilder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(480, 160);
+            this.Controls.Add(this.updateClientButton);
             this.Controls.Add(this.installClientButton);
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.progressLabel);
@@ -139,6 +151,7 @@
         private System.Windows.Forms.Label progressLabel;
         private System.Windows.Forms.ProgressBar progressBar;
         private System.Windows.Forms.Button installClientButton;
+        private System.Windows.Forms.Button updateClientButton;
     }
 }
 
