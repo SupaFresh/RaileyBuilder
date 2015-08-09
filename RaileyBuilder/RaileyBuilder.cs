@@ -85,16 +85,18 @@ namespace RaileyBuilder
             }
         }
 
-        private void DisableServerOptions()
+        private void DisableInstallerOptions()
         {
             installServerButton.Enabled = false;
             updateServerButton.Enabled = false;
+            installClientButton.Enabled = false;
         }
 
-        private void EnableServerOptions()
+        private void EnableInstallerOptions()
         {
             installServerButton.Enabled = true;
             updateServerButton.Enabled = true;
+            installClientButton.Enabled = true;
         }
 
         private void browseServerFolderButton_Click(object sender, EventArgs e)
@@ -103,40 +105,56 @@ namespace RaileyBuilder
             fbd.ShowNewFolderButton = true;
             if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                serverFolderPathTextBox.Text = fbd.SelectedPath;
+                targetFolderTextBox.Text = fbd.SelectedPath;
             }
         }
 
         private async void installServerButton_Click(object sender, EventArgs e)
         {
-            DisableServerOptions();
+            DisableInstallerOptions();
             string logPath = "Log.txt";
             if (File.Exists(logPath))
             {
                 File.Delete(logPath);
             }
             Reporter reporter = new Reporter(UpdateProgress, ReportDependency, logPath);
-            ServerInstaller serverInstaller = new ServerInstaller(serverFolderPathTextBox.Text, reporter);
+            ServerInstaller serverInstaller = new ServerInstaller(targetFolderTextBox.Text, reporter);
 
             await serverInstaller.InstallServerAsync();
 
-            EnableServerOptions();
+            EnableInstallerOptions();
         }
 
         private async void updateServerButton_Click(object sender, EventArgs e)
         {
-            DisableServerOptions();
+            DisableInstallerOptions();
             string logPath = "Log.txt";
             if (File.Exists(logPath))
             {
                 File.Delete(logPath);
             }
             Reporter reporter = new Reporter(UpdateProgress, ReportDependency, logPath);
-            ServerInstaller serverInstaller = new ServerInstaller(serverFolderPathTextBox.Text, reporter);
+            ServerInstaller serverInstaller = new ServerInstaller(targetFolderTextBox.Text, reporter);
 
             await serverInstaller.UpdateServerAsync();
 
-            EnableServerOptions();
+            EnableInstallerOptions();
+        }
+
+        private async void installClientButton_Click(object sender, EventArgs e)
+        {
+            DisableInstallerOptions();
+            string logPath = "Log.txt";
+            if (File.Exists(logPath))
+            {
+                File.Delete(logPath);
+            }
+            Reporter reporter = new Reporter(UpdateProgress, ReportDependency, logPath);
+            ClientInstaller clientInstaller = new ClientInstaller(targetFolderTextBox.Text, reporter);
+
+            await clientInstaller.InstallClientAsync();
+
+            EnableInstallerOptions();
         }
     }
 }

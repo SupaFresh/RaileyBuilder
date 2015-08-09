@@ -29,13 +29,13 @@
         private void InitializeComponent()
         {
             this.installServerButton = new System.Windows.Forms.Button();
-            this.serverFolderPathTextBox = new System.Windows.Forms.TextBox();
+            this.targetFolderTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.browseServerFolderButton = new System.Windows.Forms.Button();
             this.updateServerButton = new System.Windows.Forms.Button();
             this.progressLabel = new System.Windows.Forms.Label();
             this.progressBar = new System.Windows.Forms.ProgressBar();
-            this.button1 = new System.Windows.Forms.Button();
+            this.installClientButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // installServerButton
@@ -48,21 +48,21 @@
             this.installServerButton.UseVisualStyleBackColor = true;
             this.installServerButton.Click += new System.EventHandler(this.installServerButton_Click);
             // 
-            // serverFolderPathTextBox
+            // targetFolderTextBox
             // 
-            this.serverFolderPathTextBox.Location = new System.Drawing.Point(12, 25);
-            this.serverFolderPathTextBox.Name = "serverFolderPathTextBox";
-            this.serverFolderPathTextBox.Size = new System.Drawing.Size(425, 20);
-            this.serverFolderPathTextBox.TabIndex = 1;
+            this.targetFolderTextBox.Location = new System.Drawing.Point(12, 25);
+            this.targetFolderTextBox.Name = "targetFolderTextBox";
+            this.targetFolderTextBox.Size = new System.Drawing.Size(425, 20);
+            this.targetFolderTextBox.TabIndex = 1;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(73, 13);
+            this.label1.Size = new System.Drawing.Size(92, 13);
             this.label1.TabIndex = 2;
-            this.label1.Text = "Server Folder:";
+            this.label1.Text = "Installation Folder:";
             // 
             // browseServerFolderButton
             // 
@@ -99,28 +99,28 @@
             this.progressBar.Size = new System.Drawing.Size(456, 23);
             this.progressBar.TabIndex = 7;
             // 
-            // button1
+            // installClientButton
             // 
-            this.button1.Location = new System.Drawing.Point(358, 63);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(110, 45);
-            this.button1.TabIndex = 8;
-            this.button1.Text = "Install Client";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Visible = false;
+            this.installClientButton.Location = new System.Drawing.Point(358, 63);
+            this.installClientButton.Name = "installClientButton";
+            this.installClientButton.Size = new System.Drawing.Size(110, 45);
+            this.installClientButton.TabIndex = 8;
+            this.installClientButton.Text = "Install Client";
+            this.installClientButton.UseVisualStyleBackColor = true;
+            this.installClientButton.Click += new System.EventHandler(this.installClientButton_Click);
             // 
             // RaileyBuilder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(480, 160);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.installClientButton);
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.progressLabel);
             this.Controls.Add(this.updateServerButton);
             this.Controls.Add(this.browseServerFolderButton);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.serverFolderPathTextBox);
+            this.Controls.Add(this.targetFolderTextBox);
             this.Controls.Add(this.installServerButton);
             this.Name = "RaileyBuilder";
             this.Text = "Railey Builder";
@@ -132,13 +132,13 @@
         #endregion
 
         private System.Windows.Forms.Button installServerButton;
-        private System.Windows.Forms.TextBox serverFolderPathTextBox;
+        private System.Windows.Forms.TextBox targetFolderTextBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button browseServerFolderButton;
         private System.Windows.Forms.Button updateServerButton;
         private System.Windows.Forms.Label progressLabel;
         private System.Windows.Forms.ProgressBar progressBar;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button installClientButton;
     }
 }
 
