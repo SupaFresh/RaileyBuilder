@@ -186,6 +186,8 @@ namespace RaileyBuilder
 
             reporter.WriteToLog("Server installation complete!");
             reporter.UpdateProgress("Server installation complete!", 100);
+
+            Process.Start(Path.Combine(TargetDirectory, "Server", "bin", "Release"));
         }
 
         private async Task WriteConfigurationFile(string databaseUsername, string databasePassword, int databasePort)
