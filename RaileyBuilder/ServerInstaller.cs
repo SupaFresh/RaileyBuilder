@@ -29,104 +29,13 @@ using System.Xml;
 
 namespace RaileyBuilder
 {
-    class ServerInstaller
+    class ServerInstaller : BaseInstaller
     {
-        private static readonly string[] ProgramFilesDirectories = new string[] {
-            "Program Files (x86)",
-            "Program Files"
-        };
-
-        private static readonly string GitSubdirectory = @"Git\bin\git.exe";
-        private static readonly string MySQLSubdirectory = @"MySQL\MySQL Server 5.6\bin\mysql.exe";
-
         private static readonly string ServerURI = @"https://github.com/pmdcp/Server";
 
-        public string ServerFolder { get; private set; }
-
-        readonly string GitPath;
-        readonly string MySQLPath;
-
-        Reporter reporter;
-
-        public ServerInstaller(string serverFolder, Reporter reporter)
+        public ServerInstaller(string targetDirectory, Reporter reporter)
+            : base(targetDirectory, reporter)
         {
-            this.ServerFolder = serverFolder;
-
-            this.reporter = reporter;
-
-            GitPath = FindAmbiguousExecutable(GitSubdirectory);
-            MySQLPath = FindAmbiguousExecutable(MySQLSubdirectory);
-        }
-
-        private string FindAmbiguousExecutable(string subFolder)
-        {
-            DriveInfo[] drives = DriveInfo.GetDrives();
-            foreach (DriveInfo drive in drives)
-            {
-                foreach (string programFilesDirectory in ProgramFilesDirectories)
-                {
-                    string testPath = Path.Combine(drive.Name, programFilesDirectory, subFolder);
-                    if (File.Exists(testPath))
-                    {
-                        return testPath;
-                    }
-                }
-            }
-
-            throw new FileNotFoundException("Unable to find: " + subFolder);
-        }
-
-        public bool IsInstallDirectoryEmpty()
-        {
-            if (Directory.Exists(ServerFolder) == false)
-            {
-                return true;
-            }
-
-            if (Directory.EnumerateFiles(ServerFolder).FirstOrDefault() == null && Directory.EnumerateDirectories(ServerFolder).FirstOrDefault() == null)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        private async Task<int> ExecuteAsync(string executable, string arguments)
-        {
-            ProcessStartInfo startInfo = new ProcessStartInfo(executable, arguments);
-            startInfo.UseShellExecute = false;
-            startInfo.WorkingDirectory = ServerFolder;
-            startInfo.CreateNoWindow = true;
-            startInfo.RedirectStandardOutput = true;
-            startInfo.RedirectStandardError = true;
-            Process exec = Process.Start(startInfo);
-            string output = await exec.StandardOutput.ReadToEndAsync();
-            string error = await exec.StandardError.ReadToEndAsync();
-            if (!string.IsNullOrEmpty(error))
-            {
-                output += Environment.NewLine + Environment.NewLine + "Error:" + Environment.NewLine + await exec.StandardError.ReadToEndAsync();
-            }
-
-            reporter.WriteProgramOutputToLog(executable, arguments, output);
-
-            return exec.ExitCode;
-        }
-
-        private string ReadRegistryKey(string subKeyName, string keyName)
-        {
-            using (RegistryKey subKey = Registry.LocalMachine.OpenSubKey(subKeyName))
-            {
-                if (subKey != null)
-                {
-                    Object o = subKey.GetValue(keyName);
-                    if (o != null)
-                    {
-                        return o as string;
-                    }
-                }
-            }
-
-            return null;
         }
 
         public async Task UpdateServerAsync()
@@ -160,7 +69,7 @@ namespace RaileyBuilder
             reporter.WriteToLog("Download complete!");
 
             reporter.UpdateProgress("Building server...", 70);
-            bool buildResult = await PerformBuildAsync();
+            bool buildResult = await PerformBuildAsync("Server.sln", "Release");
             if (!buildResult)
             {
                 return;
@@ -177,17 +86,8 @@ namespace RaileyBuilder
             reporter.WriteToLog("Git Path: " + GitPath);
             reporter.WriteToLog("Checking input data...");
 
-            if (!File.Exists(GitPath))
+            if (!(await CheckDependencies()))
             {
-                reporter.ReportMissingDependency("Git", "https://msysgit.github.io/");
-                reporter.ReportError("Unable to find Git client. Make sure you've installed msysgit!");
-                return;
-            }
-
-            if (!File.Exists(MySQLPath))
-            {
-                reporter.ReportMissingDependency("MySQL", "http://dev.mysql.com/downloads/windows/installer/5.6.html");
-                reporter.ReportError("Unable to find MySQL. Make sure you've installed MySQL!");
                 return;
             }
 
@@ -197,20 +97,20 @@ namespace RaileyBuilder
                 return;
             }
 
-            if (Directory.Exists(ServerFolder) == false)
+            if (Directory.Exists(TargetDirectory) == false)
             {
-                Directory.CreateDirectory(ServerFolder);
+                Directory.CreateDirectory(TargetDirectory);
             }
 
             reporter.WriteToLog("Preparing to download latest server files...");
             reporter.UpdateProgress("Downloading latest server files...", 10);
 
-            await ExecuteAsync(GitPath, string.Format("clone --recursive {0} {1}", "\"" + ServerURI + "\"", "\"" + ServerFolder + "\""));
+            await ExecuteAsync(GitPath, string.Format("clone --recursive {0} {1}", "\"" + ServerURI + "\"", "\"" + TargetDirectory + "\""));
 
             reporter.WriteToLog("Download complete!");
 
             reporter.UpdateProgress("Building server (Release)", 30);
-            bool buildResult = await PerformBuildAsync();
+            bool buildResult = await PerformBuildAsync("Server.sln", "Release");
             if (!buildResult)
             {
                 return;
@@ -252,15 +152,15 @@ namespace RaileyBuilder
             reporter.UpdateProgress("Extracting database seed data...", 80);
             reporter.WriteToLog("Extracting database seed data...");
 
-            if (Directory.Exists(Path.Combine(ServerFolder, "Temp")))
+            if (Directory.Exists(Path.Combine(TargetDirectory, "Temp")))
             {
-                Directory.Delete(Path.Combine(ServerFolder, "Temp"), true);
+                Directory.Delete(Path.Combine(TargetDirectory, "Temp"), true);
             }
-            using (FileStream file = new FileStream(Path.Combine(ServerFolder, "Content_Data.zip"), FileMode.Open))
+            using (FileStream file = new FileStream(Path.Combine(TargetDirectory, "Content_Data.zip"), FileMode.Open))
             {
                 using (ZipArchive zipArchive = new ZipArchive(file))
                 {
-                    zipArchive.ExtractToDirectory(Path.Combine(ServerFolder, "Temp"));
+                    zipArchive.ExtractToDirectory(Path.Combine(TargetDirectory, "Temp"));
                 }
             }
 
@@ -269,18 +169,18 @@ namespace RaileyBuilder
             reporter.WriteToLog("Creating initial database schemas (this may take some time)");
 
             reporter.UpdateProgress("Importing database schemas", 85);
-            await ExecuteAsync(MySQLPath, string.Format("-u {0} -p{1} -e \"\\. {2}\"", dbConfig.DatabaseUsername, dbConfig.DatabasePassword, Path.Combine(ServerFolder, "Temp", "mdx_schemas.sql")));
+            await ExecuteAsync(MySQLPath, string.Format("-u {0} -p{1} -e \"\\. {2}\"", dbConfig.DatabaseUsername, dbConfig.DatabasePassword, Path.Combine(TargetDirectory, "Temp", "mdx_schemas.sql")));
             reporter.UpdateProgress("Importing game data", 90);
-            await ExecuteAsync(MySQLPath, string.Format("-u {0} -p{1} -e \"\\. {2}\"", dbConfig.DatabaseUsername, dbConfig.DatabasePassword, Path.Combine(ServerFolder, "Temp", "mdx_data.sql")));
+            await ExecuteAsync(MySQLPath, string.Format("-u {0} -p{1} -e \"\\. {2}\"", dbConfig.DatabaseUsername, dbConfig.DatabasePassword, Path.Combine(TargetDirectory, "Temp", "mdx_data.sql")));
             reporter.UpdateProgress("Importing player data", 95);
-            await ExecuteAsync(MySQLPath, string.Format("-u {0} -p{1} -e \"\\. {2}\"", dbConfig.DatabaseUsername, dbConfig.DatabasePassword, Path.Combine(ServerFolder, "Temp", "mdx_players.sql")));
+            await ExecuteAsync(MySQLPath, string.Format("-u {0} -p{1} -e \"\\. {2}\"", dbConfig.DatabaseUsername, dbConfig.DatabasePassword, Path.Combine(TargetDirectory, "Temp", "mdx_players.sql")));
 
             reporter.WriteToLog("Schemas created!");
 
             reporter.UpdateProgress("Cleaning up...", 99);
             reporter.WriteToLog("Deleting temporary files...");
 
-            Directory.Delete(Path.Combine(ServerFolder, "Temp"), true);
+            Directory.Delete(Path.Combine(TargetDirectory, "Temp"), true);
 
             reporter.WriteToLog("Temporary files deleted!");
 
@@ -288,38 +188,9 @@ namespace RaileyBuilder
             reporter.UpdateProgress("Server installation complete!", 100);
         }
 
-        private async Task<bool> PerformBuildAsync()
-        {
-            reporter.WriteToLog("Starting build under (Release)...");
-
-            string msBuildFolder = ReadRegistryKey(@"Software\Microsoft\MSBuild\ToolsVersions\4.0", "MSBuildToolsPath");
-            if (string.IsNullOrEmpty(msBuildFolder))
-            {
-                reporter.ReportError("The correct version of MSBuild has not been found. Have you installed Visual Studio?");
-                return false;
-            }
-            string msBuildPath = Path.Combine(msBuildFolder, "msbuild.exe");
-            if (File.Exists(msBuildPath) == false)
-            {
-                reporter.ReportError("MSBuild has not been found. It appears to be installed, but some files are missing. Try reinstalling.");
-                return false;
-            }
-
-            int result = await ExecuteAsync(msBuildPath, string.Format("\"{0}\" /p:Configuration=Release", Path.Combine(ServerFolder, "Server.sln")));
-
-            if (result != 0)
-            {
-                reporter.ReportError("A build error has occured! Contact the PMDCP administrators for assistance.");
-                return false;
-            }
-
-            reporter.WriteToLog("Build complete!");
-            return true;
-        }
-
         private async Task WriteConfigurationFile(string databaseUsername, string databasePassword, int databasePort)
         {
-            string path = Path.Combine(ServerFolder, "Server", "bin", "Release", "Data", "config.xml");
+            string path = Path.Combine(TargetDirectory, "Server", "bin", "Release", "Data", "config.xml");
 
             XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
             {

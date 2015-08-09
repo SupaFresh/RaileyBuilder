@@ -52,6 +52,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseInstaller.cs" />
+    <Compile Include="ClientInstaller.cs" />
     <Compile Include="DatabaseConfigurationForm.cs">
       <SubType>Form</SubType>
     </Compile>
