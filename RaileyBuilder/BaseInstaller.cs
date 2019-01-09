@@ -1,15 +1,13 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RaileyBuilder
 {
-    class BaseInstaller
+    internal class BaseInstaller
     {
         protected static readonly string[] ProgramFilesDirectories = new string[] {
             "Program Files (x86)",
@@ -17,7 +15,7 @@ namespace RaileyBuilder
         };
 
         protected static readonly string GitSubdirectory = @"Git\bin\git.exe";
-        protected static readonly string MySQLSubdirectory = @"MySQL\MySQL Server 5.6\bin\mysql.exe";
+        protected static readonly string MySQLSubdirectory = @"MySQL\MySQL Server 8.0\bin\mysql.exe";
 
         public string TargetDirectory { get; private set; }
 
@@ -28,7 +26,7 @@ namespace RaileyBuilder
 
         public BaseInstaller(string targetDirectory, Reporter reporter)
         {
-            this.TargetDirectory = targetDirectory;
+            TargetDirectory = targetDirectory;
 
             this.reporter = reporter;
 
@@ -71,12 +69,14 @@ namespace RaileyBuilder
 
         protected async Task<int> ExecuteAsync(string executable, string arguments)
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo(executable, arguments);
-            startInfo.UseShellExecute = false;
-            startInfo.WorkingDirectory = TargetDirectory;
-            startInfo.CreateNoWindow = true;
-            startInfo.RedirectStandardOutput = true;
-            startInfo.RedirectStandardError = true;
+            ProcessStartInfo startInfo = new ProcessStartInfo(executable, arguments)
+            {
+                UseShellExecute = false,
+                WorkingDirectory = TargetDirectory,
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            };
             Process exec = Process.Start(startInfo);
             string output = await exec.StandardOutput.ReadToEndAsync();
             string error = await exec.StandardError.ReadToEndAsync();
@@ -96,7 +96,7 @@ namespace RaileyBuilder
             {
                 if (subKey != null)
                 {
-                    Object o = subKey.GetValue(keyName);
+                    object o = subKey.GetValue(keyName);
                     if (o != null)
                     {
                         return o as string;

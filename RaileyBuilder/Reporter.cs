@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RaileyBuilder
 {
-    class Reporter
+    internal class Reporter
     {
-        Action<string, int> updateProgressDelegate;
-        Action<string, string> reportDependencyDelegate;
-        string logFilePath;
+        private readonly Action<string, int> updateProgressDelegate;
+        private readonly Action<string, string> reportDependencyDelegate;
+        private readonly string logFilePath;
 
         public Reporter(Action<string, int> updateProgressDelegate, Action<string, string> reportDependencyDelegate, string logFilePath)
         {
