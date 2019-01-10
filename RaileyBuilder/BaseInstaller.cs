@@ -111,14 +111,14 @@ namespace RaileyBuilder
         {
             if (!File.Exists(GitPath))
             {
-                reporter.ReportMissingDependency("Git", "https://msysgit.github.io/");
-                reporter.ReportError("Unable to find Git client. Make sure you've installed msysgit!");
+                reporter.ReportMissingDependency("Git", "https://gitforwindows.org/");
+                reporter.ReportError("Unable to find Git client. Make sure you've installed git!");
                 return false;
             }
 
             if (!File.Exists(MySQLPath))
             {
-                reporter.ReportMissingDependency("MySQL", "http://dev.mysql.com/downloads/windows/installer/5.6.html");
+                reporter.ReportMissingDependency("MySQL", "https://dev.mysql.com/downloads/windows/installer/8.0.html");
                 reporter.ReportError("Unable to find MySQL. Make sure you've installed MySQL!");
                 return false;
             }
