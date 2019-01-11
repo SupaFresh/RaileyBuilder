@@ -60,7 +60,7 @@ namespace RaileyBuilder
             reporter.WriteToLog("Git Path: " + GitPath);
             reporter.WriteToLog("Checking input data...");
 
-            if (!(await CheckDependencies()))
+            if (!(CheckDependencies()))
             {
                 return;
             }

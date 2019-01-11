@@ -81,7 +81,7 @@ namespace RaileyBuilder
             reporter.WriteToLog("Git Path: " + GitPath);
             reporter.WriteToLog("Checking input data...");
 
-            if (!(await CheckDependencies()))
+            if (!(CheckDependencies()))
             {
                 return;
             }
@@ -124,7 +124,7 @@ namespace RaileyBuilder
             DatabaseConfigurationForm dbConfig = new DatabaseConfigurationForm();
             if (dbConfig.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                await WriteConfigurationFile(dbConfig.DatabaseUsername, dbConfig.DatabasePassword, dbConfig.DatabasePort);
+                WriteConfigurationFile(dbConfig.DatabaseUsername, dbConfig.DatabasePassword, dbConfig.DatabasePort);
             }
             else
             {
@@ -137,7 +137,7 @@ namespace RaileyBuilder
             reporter.UpdateProgress("Testing database connection...", 70);
             reporter.WriteToLog("Verifying database connection...");
 
-            if (await TestDatabaseConnection(dbConfig.DatabaseUsername, dbConfig.DatabasePassword, dbConfig.DatabasePort) == false)
+            if (TestDatabaseConnection(dbConfig.DatabaseUsername, dbConfig.DatabasePassword, dbConfig.DatabasePort) == false)
             {
                 return;
             }
@@ -185,7 +185,7 @@ namespace RaileyBuilder
             Process.Start(Path.Combine(TargetDirectory, "Server", "bin", "Release"));
         }
 
-        private async Task WriteConfigurationFile(string databaseUsername, string databasePassword, int databasePort)
+        private void WriteConfigurationFile(string databaseUsername, string databasePassword, int databasePort)
         {
             string path = Path.Combine(TargetDirectory, "Data", "Data", "config.xml");
 
@@ -214,7 +214,7 @@ namespace RaileyBuilder
             }
         }
 
-        private async Task<bool> TestDatabaseConnection(string username, string password, int port)
+        private bool TestDatabaseConnection(string username, string password, int port)
         {
             string connectionString = string.Format(@"server=localhost;port={0};userid={1};password={2};", port, username, password);
             MySqlConnection connection = null;

@@ -107,7 +107,7 @@ namespace RaileyBuilder
             return null;
         }
 
-        protected async Task<bool> CheckDependencies()
+        protected bool CheckDependencies()
         {
             if (!File.Exists(GitPath))
             {
