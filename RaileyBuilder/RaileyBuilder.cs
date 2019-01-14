@@ -16,20 +16,15 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace RaileyBuilder
 {
     public partial class RaileyBuilder : Form
     {
-        int lastDependencyY;
+        private int lastDependencyY;
 
         public RaileyBuilder()
         {
@@ -38,7 +33,8 @@ namespace RaileyBuilder
             lastDependencyY = progressBar.Location.Y + progressBar.Height + 5;
         }
 
-        delegate void UpdateProgressDelegate(string message, int value);
+        private delegate void UpdateProgressDelegate(string message, int value);
+
         private void UpdateProgress(string message, int value)
         {
             if (InvokeRequired)
@@ -55,7 +51,8 @@ namespace RaileyBuilder
             }
         }
 
-        delegate void ReportDependencyDelegare(string name, string downloadUrl);
+        private delegate void ReportDependencyDelegare(string name, string downloadUrl);
+
         private void ReportDependency(string name, string downloadUrl)
         {
             if (InvokeRequired)
@@ -64,22 +61,26 @@ namespace RaileyBuilder
             }
             else
             {
-                Label label = new Label();
-                label.AutoSize = true;
-                label.Text = "Missing: " + name;
-                label.Location = new Point(10, lastDependencyY);
+                Label label = new Label
+                {
+                    AutoSize = true,
+                    Text = "Missing: " + name,
+                    Location = new Point(10, lastDependencyY)
+                };
 
-                LinkLabel linkLabel = new LinkLabel();
-                linkLabel.AutoSize = true;
-                linkLabel.Text = downloadUrl;
-                linkLabel.Location = new Point(label.Location.X + label.Width + 10, lastDependencyY);
+                LinkLabel linkLabel = new LinkLabel
+                {
+                    AutoSize = true,
+                    Text = downloadUrl,
+                    Location = new Point(label.Location.X + label.Width + 10, lastDependencyY)
+                };
 
-                this.Controls.Add(label);
-                this.Controls.Add(linkLabel);
+                Controls.Add(label);
+                Controls.Add(linkLabel);
 
                 int maxHeight = System.Math.Max(label.Height, linkLabel.Height);
 
-                this.Height += maxHeight;
+                Height += maxHeight;
 
                 lastDependencyY += System.Math.Max(label.Height, linkLabel.Height) + 10;
             }
@@ -103,8 +104,10 @@ namespace RaileyBuilder
 
         private void browseServerFolderButton_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog fbd = new FolderBrowserDialog();
-            fbd.ShowNewFolderButton = true;
+            FolderBrowserDialog fbd = new FolderBrowserDialog
+            {
+                ShowNewFolderButton = true
+            };
             if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 targetFolderTextBox.Text = fbd.SelectedPath;

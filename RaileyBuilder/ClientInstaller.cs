@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RaileyBuilder
 {
-    class ClientInstaller : BaseInstaller
+    internal class ClientInstaller : BaseInstaller
     {
-        private static readonly string ClientURI = @"https://github.com/pmdcp/Client";
+        private static readonly string ClientURI = @"https://github.com/PMDShift/Client";
 
         public ClientInstaller(string targetDirectory, Reporter reporter)
             : base(targetDirectory, reporter)

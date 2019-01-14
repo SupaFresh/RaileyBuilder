@@ -15,23 +15,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-using Microsoft.Win32;
 using MySql.Data.MySqlClient;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
 namespace RaileyBuilder
 {
-    class ServerInstaller : BaseInstaller
+    internal class ServerInstaller : BaseInstaller
     {
-        private static readonly string ServerURI = @"https://github.com/pmdcp/Server";
+        private static readonly string ServerURI = @"https://github.com/PMDShift/Server";
 
         public ServerInstaller(string targetDirectory, Reporter reporter)
             : base(targetDirectory, reporter)
@@ -192,7 +187,7 @@ namespace RaileyBuilder
 
         private async Task WriteConfigurationFile(string databaseUsername, string databasePassword, int databasePort)
         {
-            string path = Path.Combine(TargetDirectory, "Server", "bin", "Release", "Data", "config.xml");
+            string path = Path.Combine(TargetDirectory, "Data", "Data", "config.xml");
 
             XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
             {
